@@ -1,0 +1,131 @@
+<div class="menu-layout">
+
+  <!-- Colonna sinistra: categorie -->
+  <aside class="sidebar">
+    <h3>Categorie</h3>
+
+    @if (errore) {
+      <div class="errore">{{ errore }}</div>
+    }
+
+    <ul class="cat-list">
+      @for (cat of categorie; track cat.id) {
+        <li
+          class="cat-item"
+          [class.selected]="cat.id === categoriaSelezionata?.id"
+          (click)="selezionaCategoria(cat)"
+        >
+          <span>{{ cat.nome }}</span>
+          <button class="btn-delete-cat" (click)="eliminaCategoria(cat); $event.stopPropagation()">✕</button>
+        </li>
+      }
+    </ul>
+
+    <!-- Form aggiunta categoria -->
+    <div class="add-cat-form">
+      <input
+        type="text"
+        placeholder="Nuova categoria…"
+        [(ngModel)]="nuovaCategoria"
+        (keydown.enter)="aggiungiCategoria()"
+      />
+      <button class="btn-add-cat" (click)="aggiungiCategoria()">+</button>
+    </div>
+  </aside>
+
+  <!-- Colonna destra: prodotti -->
+  <main class="prodotti-area">
+
+    @if (!categoriaSelezionata) {
+      <div class="center-msg">Seleziona una categoria</div>
+    } @else {
+      <div class="prodotti-header">
+        <h3>{{ categoriaSelezionata.nome }}</h3>
+        <button class="btn-primary" (click)="apriFormNuovoProdotto()">+ Nuovo prodotto</button>
+      </div>
+
+      @if (loading) {
+        <div class="center-msg">Caricamento…</div>
+      }
+
+      <!-- Form aggiunta / modifica prodotto -->
+      @if (mostraForm) {
+        <div class="form-overlay" (click)="annullaForm()">
+          <div class="form-card" (click)="$event.stopPropagation()">
+            <h4>{{ prodottoInModifica ? 'Modifica prodotto' : 'Nuovo prodotto' }}</h4>
+
+            <label>
+              Nome *
+              <input type="text" [(ngModel)]="formProdotto.nome" placeholder="es. Cheeseburger" />
+            </label>
+
+            <label>
+              Descrizione
+              <input type="text" [(ngModel)]="formProdotto.descrizione" placeholder="Ingredienti, note…" />
+            </label>
+
+            <label>
+              Prezzo (€) *
+              <input type="number" [(ngModel)]="formProdotto.prezzo" min="0" step="0.10" />
+            </label>
+
+            <label>
+              URL immagine
+              <input type="text" [(ngModel)]="formProdotto.immagine_url" placeholder="https://…" />
+            </label>
+
+            <label class="label-check">
+              <input type="checkbox" [(ngModel)]="formProdotto.disponibile" />
+              Disponibile
+            </label>
+
+            <div class="form-actions">
+              <button class="btn-secondary" (click)="annullaForm()">Annulla</button>
+              <button class="btn-primary" (click)="salvaForm()">
+                {{ prodottoInModifica ? 'Salva modifiche' : 'Aggiungi' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Tabella prodotti -->
+      @if (!loading && !mostraForm) {
+        @if (prodotti.length === 0) {
+          <div class="center-msg vuoto">Nessun prodotto in questa categoria</div>
+        } @else {
+          <table class="prodotti-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Descrizione</th>
+                <th>Prezzo</th>
+                <th>Disponibile</th>
+                <th>Azioni</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (prod of prodotti; track prod.id) {
+                <tr [class.non-disponibile]="!prod.disponibile">
+                  <td>{{ prod.nome }}</td>
+                  <td class="col-desc">{{ prod.descrizione ?? '—' }}</td>
+                  <td>€{{ prod.prezzo | number:'1.2-2' }}</td>
+                  <td class="col-center">
+                    <span [class]="prod.disponibile ? 'dot-si' : 'dot-no'">
+                      {{ prod.disponibile ? 'Sì' : 'No' }}
+                    </span>
+                  </td>
+                  <td class="col-azioni">
+                    <button class="btn-edit" (click)="apriFormModifica(prod)">Modifica</button>
+                    <button class="btn-delete" (click)="eliminaProdotto(prod)">Elimina</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      }
+    }
+  </main>
+
+</div>

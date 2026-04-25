@@ -1,0 +1,72 @@
+<div class="page-header">
+  <h2>Ordini</h2>
+  <div class="header-actions">
+    <label class="toggle-label">
+      <input type="checkbox" [(ngModel)]="mostraTutti" />
+      Mostra anche consegnati
+    </label>
+    <button class="btn-refresh" (click)="caricaOrdini()">&#8635; Aggiorna</button>
+  </div>
+</div>
+
+<!-- Stato di caricamento -->
+@if (loading) {
+  <div class="center-msg">Caricamento ordini…</div>
+}
+
+<!-- Errore -->
+@if (errore) {
+  <div class="errore">{{ errore }}</div>
+}
+
+<!-- Nessun ordine -->
+@if (!loading && !errore && ordiniFiltrati.length === 0) {
+  <div class="center-msg vuoto">
+    <span class="icon-vuoto">🍔</span>
+    <p>Nessun ordine in corso</p>
+  </div>
+}
+
+<!-- Lista ordini -->
+@if (!loading && !errore) {
+  <div class="ordini-grid">
+    @for (ordine of ordiniFiltrati; track ordine.id) {
+      <div class="ordine-card" [class]="'stato-' + ordine.stato">
+        <!-- Header card -->
+        <div class="ordine-header">
+          <span class="ordine-numero">#{{ ordine.numero }}</span>
+          <span class="badge" [class]="classeStato(ordine.stato)">
+            {{ etichette[ordine.stato] }}
+          </span>
+        </div>
+
+        <!-- Orario -->
+        <div class="ordine-orario">{{ ordine.created_at | date:'HH:mm' }}</div>
+
+        <!-- Lista prodotti -->
+        <ul class="ordine-items">
+          @for (item of ordine.items; track item.prodotto_id) {
+            <li>
+              <span class="item-qty">{{ item.quantita }}×</span>
+              {{ item.nome }}
+            </li>
+          }
+        </ul>
+
+        <!-- Footer con totale e bottone avanza stato -->
+        <div class="ordine-footer">
+          <span class="totale">€{{ ordine.totale | number:'1.2-2' }}</span>
+          @if (ordine.stato !== 'consegnato') {
+            <button class="btn-avanza" (click)="avanzaStato(ordine)">
+              {{ ordine.stato === 'ricevuto' ? 'Inizia preparazione' :
+                 ordine.stato === 'in_preparazione' ? 'Segna pronto' :
+                 'Consegna' }}
+            </button>
+          } @else {
+            <span class="consegnato-label">✓ Consegnato</span>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}
