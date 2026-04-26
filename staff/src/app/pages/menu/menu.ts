@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
@@ -15,16 +15,14 @@ import { Prodotto } from '../../models/prodotto.model';
 export class MenuComponent implements OnInit {
   private api = inject(ApiService);
 
-  categorie: Categoria[] = [];
-  prodotti: Prodotto[] = [];
-  categoriaSelezionata: Categoria | null = null;
-  loading = true;
-  errore: string | null = null;
+  categorie = signal<Categoria[]>([]);
+  prodotti = signal<Prodotto[]>([]);
+  categoriaSelezionata = signal<Categoria | null>(null);
+  loading = signal(true);
+  errore = signal<string | null>(null);
 
-  // Form per aggiungere una nuova categoria
   nuovaCategoria = '';
 
-  // Form prodotto (usato sia per aggiunta che per modifica)
   formProdotto = this.prodottoVuoto();
   prodottoInModifica: Prodotto | null = null;
   mostraForm = false;
@@ -34,46 +32,44 @@ export class MenuComponent implements OnInit {
   }
 
   caricaDati(): void {
-    this.loading = true;
-    this.errore = null;
+    this.loading.set(true);
+    this.errore.set(null);
     this.api.getCategorie().subscribe({
       next: (cats) => {
-        this.categorie = cats;
-        // Seleziona la prima categoria di default
-        if (cats.length > 0 && !this.categoriaSelezionata) {
+        this.categorie.set(cats);
+        if (cats.length > 0 && !this.categoriaSelezionata()) {
           this.selezionaCategoria(cats[0]);
-        } else if (this.categoriaSelezionata) {
+        } else if (this.categoriaSelezionata()) {
           this.caricaProdotti();
         } else {
-          this.loading = false;
+          this.loading.set(false);
         }
       },
       error: () => {
-        this.errore = 'Impossibile caricare le categorie.';
-        this.loading = false;
+        this.errore.set('Impossibile caricare le categorie.');
+        this.loading.set(false);
       },
     });
   }
 
   selezionaCategoria(cat: Categoria): void {
-    this.categoriaSelezionata = cat;
+    this.categoriaSelezionata.set(cat);
     this.mostraForm = false;
     this.caricaProdotti();
   }
 
   caricaProdotti(): void {
-    this.loading = true;
-    // Carica tutti i prodotti e filtra per categoria lato client
+    this.loading.set(true);
     this.api.getProdotti().subscribe({
       next: (prods) => {
-        this.prodotti = prods.filter(
-          (p) => p.categoria_id === this.categoriaSelezionata?.id
-        );
-        this.loading = false;
+        this.prodotti.set(prods.filter(
+          (p) => p.categoria_id === this.categoriaSelezionata()?.id
+        ));
+        this.loading.set(false);
       },
       error: () => {
-        this.errore = 'Impossibile caricare i prodotti.';
-        this.loading = false;
+        this.errore.set('Impossibile caricare i prodotti.');
+        this.loading.set(false);
       },
     });
   }
@@ -96,9 +92,9 @@ export class MenuComponent implements OnInit {
     if (!confirm(`Eliminare la categoria "${cat.nome}" e tutti i suoi prodotti?`)) return;
     this.api.deleteCategoria(cat.id).subscribe({
       next: () => {
-        if (this.categoriaSelezionata?.id === cat.id) {
-          this.categoriaSelezionata = null;
-          this.prodotti = [];
+        if (this.categoriaSelezionata()?.id === cat.id) {
+          this.categoriaSelezionata.set(null);
+          this.prodotti.set([]);
         }
         this.caricaDati();
       },
@@ -116,7 +112,6 @@ export class MenuComponent implements OnInit {
 
   apriFormModifica(prodotto: Prodotto): void {
     this.prodottoInModifica = prodotto;
-    // Copia i dati del prodotto nel form
     this.formProdotto = {
       nome: prodotto.nome,
       descrizione: prodotto.descrizione ?? '',
@@ -129,18 +124,16 @@ export class MenuComponent implements OnInit {
   }
 
   salvaForm(): void {
-    if (!this.formProdotto.nome || !this.categoriaSelezionata) return;
+    if (!this.formProdotto.nome || !this.categoriaSelezionata()) return;
 
-    // Normalizza i campi opzionali
     const payload = {
       ...this.formProdotto,
       descrizione: this.formProdotto.descrizione || null,
       immagine_url: this.formProdotto.immagine_url || null,
-      categoria_id: this.categoriaSelezionata.id,
+      categoria_id: this.categoriaSelezionata()!.id,
     };
 
     if (this.prodottoInModifica) {
-      // Modifica prodotto esistente
       this.api.updateProdotto(this.prodottoInModifica.id, payload).subscribe({
         next: () => {
           this.mostraForm = false;
@@ -149,7 +142,6 @@ export class MenuComponent implements OnInit {
         error: () => alert('Errore modifica prodotto'),
       });
     } else {
-      // Aggiunta nuovo prodotto
       this.api.addProdotto(payload).subscribe({
         next: () => {
           this.mostraForm = false;
@@ -180,7 +172,7 @@ export class MenuComponent implements OnInit {
       prezzo: 0,
       immagine_url: '',
       disponibile: true,
-      categoria_id: this.categoriaSelezionata?.id ?? 0,
+      categoria_id: this.categoriaSelezionata()?.id ?? 0,
     };
   }
 }

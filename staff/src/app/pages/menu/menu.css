@@ -6,7 +6,7 @@
 
 /* ── Sidebar categorie ─────────────────────────────────────────────────────── */
 .sidebar {
-  width: 220px;
+  width: 280px;
   flex-shrink: 0;
   background: #fff;
   border-radius: 10px;
@@ -127,7 +127,7 @@
 
 .prodotti-table tr:last-child td { border-bottom: none; }
 
-.prodotti-table tr.non-disponibile { opacity: 0.5; }
+.prodotti-table tr.non-disponibile td:not(.col-azioni) { opacity: 0.5; }
 
 .col-desc { color: #888; font-size: 0.85rem; max-width: 200px; }
 .col-center { text-align: center; }

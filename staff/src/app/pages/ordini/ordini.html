@@ -2,7 +2,7 @@
   <h2>Ordini</h2>
   <div class="header-actions">
     <label class="toggle-label">
-      <input type="checkbox" [(ngModel)]="mostraTutti" />
+      <input type="checkbox" [ngModel]="mostraTutti()" (ngModelChange)="mostraTutti.set($event)" />
       Mostra anche consegnati
     </label>
     <button class="btn-refresh" (click)="caricaOrdini()">&#8635; Aggiorna</button>
@@ -10,17 +10,17 @@
 </div>
 
 <!-- Stato di caricamento -->
-@if (loading) {
+@if (loading()) {
   <div class="center-msg">Caricamento ordini…</div>
 }
 
 <!-- Errore -->
-@if (errore) {
-  <div class="errore">{{ errore }}</div>
+@if (errore()) {
+  <div class="errore">{{ errore() }}</div>
 }
 
 <!-- Nessun ordine -->
-@if (!loading && !errore && ordiniFiltrati.length === 0) {
+@if (!loading() && !errore() && ordiniFiltrati().length === 0) {
   <div class="center-msg vuoto">
     <span class="icon-vuoto">🍔</span>
     <p>Nessun ordine in corso</p>
@@ -28,9 +28,9 @@
 }
 
 <!-- Lista ordini -->
-@if (!loading && !errore) {
+@if (!loading() && !errore()) {
   <div class="ordini-grid">
-    @for (ordine of ordiniFiltrati; track ordine.id) {
+    @for (ordine of ordiniFiltrati(); track ordine.id) {
       <div class="ordine-card" [class]="'stato-' + ordine.stato">
         <!-- Header card -->
         <div class="ordine-header">

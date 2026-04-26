@@ -4,15 +4,15 @@
   <aside class="sidebar">
     <h3>Categorie</h3>
 
-    @if (errore) {
-      <div class="errore">{{ errore }}</div>
+    @if (errore()) {
+      <div class="errore">{{ errore() }}</div>
     }
 
     <ul class="cat-list">
-      @for (cat of categorie; track cat.id) {
+      @for (cat of categorie(); track cat.id) {
         <li
           class="cat-item"
-          [class.selected]="cat.id === categoriaSelezionata?.id"
+          [class.selected]="cat.id === categoriaSelezionata()?.id"
           (click)="selezionaCategoria(cat)"
         >
           <span>{{ cat.nome }}</span>
@@ -36,15 +36,15 @@
   <!-- Colonna destra: prodotti -->
   <main class="prodotti-area">
 
-    @if (!categoriaSelezionata) {
+    @if (!categoriaSelezionata()) {
       <div class="center-msg">Seleziona una categoria</div>
     } @else {
       <div class="prodotti-header">
-        <h3>{{ categoriaSelezionata.nome }}</h3>
+        <h3>{{ categoriaSelezionata()!.nome }}</h3>
         <button class="btn-primary" (click)="apriFormNuovoProdotto()">+ Nuovo prodotto</button>
       </div>
 
-      @if (loading) {
+      @if (loading()) {
         <div class="center-msg">Caricamento…</div>
       }
 
@@ -90,8 +90,8 @@
       }
 
       <!-- Tabella prodotti -->
-      @if (!loading && !mostraForm) {
-        @if (prodotti.length === 0) {
+      @if (!loading() && !mostraForm) {
+        @if (prodotti().length === 0) {
           <div class="center-msg vuoto">Nessun prodotto in questa categoria</div>
         } @else {
           <table class="prodotti-table">
@@ -105,7 +105,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (prod of prodotti; track prod.id) {
+              @for (prod of prodotti(); track prod.id) {
                 <tr [class.non-disponibile]="!prod.disponibile">
                   <td>{{ prod.nome }}</td>
                   <td class="col-desc">{{ prod.descrizione ?? '—' }}</td>

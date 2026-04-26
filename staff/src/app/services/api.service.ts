@@ -6,7 +6,7 @@ import { Prodotto } from '../models/prodotto.model';
 import { Ordine } from '../models/ordine.model';
 
 // Cambia con l'URL del tuo backend Flask (es. URL del port forwarding in Codespaces)
-const BASE = 'https://studious-succotash-v6pxgvxpxx6x3jgg-5000.app.github.dev/api';
+const BASE = 'https://redesigned-disco-976g6v4x4v9xfxwwp-5000.app.github.dev/api';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
