@@ -20,7 +20,7 @@ class ProductCard extends StatelessWidget {
           Expanded(
             child: prodotto.immagineUrl != null
                 ? Image.network(
-                    prodotto.immagineUrl!,
+                    'https://redesigned-disco-976g6v4x4v9xfxwwp-5000.app.github.dev/api/immagine?url=${Uri.encodeComponent(prodotto.immagineUrl!)}',
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => _placeholder(),
@@ -29,13 +29,13 @@ class ProductCard extends StatelessWidget {
           ),
           // Nome, descrizione, prezzo e controlli quantità
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+            padding: const EdgeInsets.fromLTRB(6, 6, 6, 4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   prodotto.nome,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -43,12 +43,12 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     prodotto.descrizione!,
-                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 10, color: Colors.grey[600]),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -57,7 +57,7 @@ class ProductCard extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.orange,
-                        fontSize: 15,
+                        fontSize: 12,
                       ),
                     ),
                     // ListenableBuilder si ricostruisce ogni volta che il carrello cambia
@@ -73,7 +73,7 @@ class ProductCard extends StatelessWidget {
                             onTap: () => cart.addItem(
                                 prodotto.id, prodotto.nome, prodotto.prezzo),
                             child: const Icon(Icons.add_circle,
-                                color: Colors.orange, size: 28),
+                                color: Colors.orange, size: 22),
                           );
                         }
 
@@ -82,19 +82,19 @@ class ProductCard extends StatelessWidget {
                             GestureDetector(
                               onTap: () => cart.decreaseItem(prodotto.id),
                               child: const Icon(Icons.remove_circle_outline,
-                                  color: Colors.orange, size: 24),
+                                  color: Colors.orange, size: 20),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              padding: const EdgeInsets.symmetric(horizontal: 2),
                               child: Text('$quantita',
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 15)),
+                                      fontWeight: FontWeight.bold, fontSize: 12)),
                             ),
                             GestureDetector(
                               onTap: () => cart.addItem(
                                   prodotto.id, prodotto.nome, prodotto.prezzo),
                               child: const Icon(Icons.add_circle,
-                                  color: Colors.orange, size: 24),
+                                  color: Colors.orange, size: 20),
                             ),
                           ],
                         );

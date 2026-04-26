@@ -5,7 +5,7 @@ import '../models/prodotto.dart';
 
 // Cambia questo valore con l'URL del tuo backend Flask
 // In Codespaces usa l'URL del port forwarding, es: https://xxxx-5000.app.github.dev
-const _base = 'https://studious-succotash-v6pxgvxpxx6x3jgg-5000.app.github.dev/api';
+const _base = 'https://redesigned-disco-976g6v4x4v9xfxwwp-5000.app.github.dev/api';
 
 class ApiService {
   static Future<List<Categoria>> getCategorie() async {
