@@ -1,7 +1,8 @@
 import json
+import requests as http
 from datetime import datetime, date
 from decimal import Decimal
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 from databasewrapper import DatabaseWrapper
 
@@ -27,6 +28,29 @@ def ok(data, code=200):
 
 def err(msg, code=400):
     return jsonify({"error": msg}), code
+
+
+# ── PROXY IMMAGINI ───────────────────────────────────────────────────────────
+
+@app.route("/api/immagine")
+def proxy_immagine():
+    url = request.args.get("url")
+    if not url:
+        return err("Parametro 'url' obbligatorio")
+    try:
+        from urllib.parse import urlparse
+        origin = f"{urlparse(url).scheme}://{urlparse(url).netloc}"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+            "Accept": "image/webp,image/apng,image/*,*/*;q=0.8",
+            "Referer": origin + "/",
+        }
+        r = http.get(url, timeout=8, headers=headers, allow_redirects=True)
+        if r.status_code != 200:
+            return err(f"Sorgente ha risposto {r.status_code}", 502)
+        return Response(r.content, content_type=r.headers.get("Content-Type", "image/jpeg"))
+    except Exception as e:
+        return err(f"Impossibile scaricare l'immagine: {e}", 502)
 
 
 # ── CATEGORIE ────────────────────────────────────────────────────────────────
