@@ -1,3 +1,5 @@
 flask
 flask-cors
 requests
+pymysql
+python-dotenv

@@ -2,7 +2,7 @@ import json
 import requests as http
 from datetime import datetime, date
 from decimal import Decimal
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, render_template
 from flask_cors import CORS
 from databasewrapper import DatabaseWrapper
 
@@ -28,6 +28,13 @@ def ok(data, code=200):
 
 def err(msg, code=400):
     return jsonify({"error": msg}), code
+
+
+# ── DASHBOARD ────────────────────────────────────────────────────────────────
+
+@app.route("/")
+def dashboard():
+    return render_template("index.html")
 
 
 # ── PROXY IMMAGINI ───────────────────────────────────────────────────────────
