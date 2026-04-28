@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/prodotto.dart';
 import '../models/cart_model.dart';
+import '../services/api_service.dart';
 
 class ProductCard extends StatelessWidget {
   final Prodotto prodotto;
@@ -20,7 +21,7 @@ class ProductCard extends StatelessWidget {
           Expanded(
             child: prodotto.immagineUrl != null
                 ? Image.network(
-                    'https://redesigned-disco-976g6v4x4v9xfxwwp-5000.app.github.dev/api/immagine?url=${Uri.encodeComponent(prodotto.immagineUrl!)}',
+                    ApiService.imageProxyUrl(prodotto.immagineUrl!),
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => _placeholder(),

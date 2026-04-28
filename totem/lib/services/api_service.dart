@@ -3,11 +3,16 @@ import 'package:http/http.dart' as http;
 import '../models/categoria.dart';
 import '../models/prodotto.dart';
 
-// Cambia questo valore con l'URL del tuo backend Flask
-// In Codespaces usa l'URL del port forwarding, es: https://xxxx-5000.app.github.dev
-const _base = 'https://redesigned-disco-976g6v4x4v9xfxwwp-5000.app.github.dev/api';
-
 class ApiService {
+  static String _base = 'http://localhost:5000/api';
+
+  static void setBaseUrl(String backendUrl) {
+    _base = '$backendUrl/api';
+  }
+
+  static String imageProxyUrl(String originalUrl) =>
+      '$_base/immagine?url=${Uri.encodeComponent(originalUrl)}';
+
   static Future<List<Categoria>> getCategorie() async {
     final res = await http.get(Uri.parse('$_base/categorie'));
     if (res.statusCode != 200) throw Exception('Errore caricamento categorie');

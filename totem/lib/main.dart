@@ -1,8 +1,17 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'models/cart_model.dart';
+import 'services/api_service.dart';
 import 'app_router.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    final raw = await rootBundle.loadString('assets/config.json');
+    final config = jsonDecode(raw) as Map<String, dynamic>;
+    ApiService.setBaseUrl(config['backendUrl'] as String);
+  } catch (_) {}
   runApp(const TotemApp());
 }
 
